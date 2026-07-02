@@ -1,0 +1,56 @@
+@host = http://localhost:5000
+
+### Get all products
+GET {{host}}/api/products
+
+### Get one product
+GET {{host}}/api/products/680
+
+### Create a product
+POST {{host}}/api/products
+Content-Type: application/json
+
+{
+  "name": "Learning Widget",
+  "productNumber": "LW-0001",
+  "makeFlag": false,
+  "finishedGoodsFlag": false,
+  "color": "Black",
+  "safetyStockLevel": 100,
+  "reorderPoint": 75,
+  "standardCost": 10.50,
+  "listPrice": 24.99,
+  "size": null,
+  "weight": null,
+  "daysToManufacture": 0,
+  "productSubcategoryID": null,
+  "productModelID": null,
+  "sellStartDate": "2026-01-01T00:00:00"
+}
+
+### Update a product
+PUT {{host}}/api/products/680
+Content-Type: application/json
+
+{
+  "name": "Updated Widget",
+  "productNumber": "LW-0001",
+  "makeFlag": false,
+  "finishedGoodsFlag": false,
+  "color": "Red",
+  "safetyStockLevel": 100,
+  "reorderPoint": 75,
+  "standardCost": 11.00,
+  "listPrice": 29.99,
+  "size": null,
+  "weight": null,
+  "daysToManufacture": 0,
+  "productSubcategoryID": null,
+  "productModelID": null,
+  "sellStartDate": "2026-01-01T00:00:00",
+  "sellEndDate": null,
+  "discontinuedDate": null
+}
+
+### Delete a product
+DELETE {{host}}/api/products/680
