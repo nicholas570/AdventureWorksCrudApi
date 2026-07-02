@@ -5,9 +5,15 @@ namespace AdventureWorksCrudApi.Data;
 
 public class ProductRepository(AppDbContext db) : IProductRepository
 {
-    public async Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken ct = default)
+    public async Task<IReadOnlyList<Product>> GetPageAsync(int? afterId, int limit, CancellationToken ct = default)
     {
-        return await db.Products.AsNoTracking().ToListAsync(ct);
+        IQueryable<Product> query = db.Products.AsNoTracking();
+        if (afterId is not null)
+            query = query.Where(p => p.ProductID > afterId.Value);
+
+        return await query.OrderBy(p => p.ProductID)
+                          .Take(limit + 1)
+                          .ToListAsync(ct);
     }
 
     public async Task<Product?> GetByIdAsync(int id, CancellationToken ct = default)

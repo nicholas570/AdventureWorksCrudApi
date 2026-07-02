@@ -1,7 +1,10 @@
 @host = https://localhost:7016
 
-### Get all products
-GET {{host}}/api/products
+### Get products - first page (cursor pagination)
+GET {{host}}/api/products?limit=5
+
+### Get products - next page (paste the nextCursor from the previous response)
+GET {{host}}/api/products?limit=5&cursor=MzIx
 
 ### Get one product
 GET {{host}}/api/products/680

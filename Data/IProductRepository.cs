@@ -4,7 +4,7 @@ namespace AdventureWorksCrudApi.Data;
 
 public interface IProductRepository
 {
-    Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<Product>> GetPageAsync(int? afterId, int limit, CancellationToken ct = default);
 
     Task<Product?> GetByIdAsync(int id, CancellationToken ct = default);
 

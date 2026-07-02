@@ -1,23 +1,35 @@
+using AdventureWorksCrudApi.Common;
 using AdventureWorksCrudApi.Data;
 using AdventureWorksCrudApi.Dtos;
 using AdventureWorksCrudApi.Models;
 
 namespace AdventureWorksCrudApi.Endpoints;
 
-/// <summary>
-/// CRUD HTTP endpoints for products. These are fully implemented and only depend
-/// on <see cref="IProductRepository"/> — the data access details live behind that seam.
-/// </summary>
 public static class ProductEndpoints
 {
     public static IEndpointRouteBuilder MapProductEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/products").WithTags("Products");
 
-        group.MapGet("/", async (IProductRepository repo, CancellationToken ct) =>
+        group.MapGet("/", async (string? cursor, int? limit, IProductRepository repo, CancellationToken ct) =>
         {
-            var products = await repo.GetAllAsync(ct);
-            return Results.Ok(products);
+            const int defaultLimit = 20, maxLimit = 100;
+            var take = Math.Clamp(limit ?? defaultLimit, 1, maxLimit);
+
+            int? afterId = null;
+            if (!string.IsNullOrEmpty(cursor))
+            {
+                if (!Cursor.TryDecode(cursor, out var decoded))
+                    return Results.BadRequest("Invalid cursor.");
+                afterId = decoded;
+            }
+
+            var rows = await repo.GetPageAsync(afterId, take, ct);
+            var hasMore = rows.Count > take;
+            var items = hasMore ? rows.Take(take).ToList() : rows;
+            var nextCursor = hasMore ? Cursor.Encode(items[^1].ProductID) : null;
+
+            return Results.Ok(new PagedResult<Product>(items, nextCursor));
         });
 
         group.MapGet("/{id:int}", async (int id, IProductRepository repo, CancellationToken ct) =>
