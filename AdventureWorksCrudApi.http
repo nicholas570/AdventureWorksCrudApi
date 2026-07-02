@@ -1,4 +1,4 @@
-@host = http://localhost:5000
+@host = https://localhost:7016
 
 ### Get all products
 GET {{host}}/api/products
