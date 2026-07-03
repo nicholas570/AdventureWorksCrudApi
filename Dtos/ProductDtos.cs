@@ -1,12 +1,10 @@
 namespace AdventureWorksCrudApi.Dtos;
 
-/// <summary>
-/// A single page of results for cursor (keyset) pagination.
-/// <paramref name="NextCursor"/> is null when there are no more pages.
-/// </summary>
 public record PagedResult<T>(IReadOnlyList<T> Items, string? NextCursor);
 
-/// <summary>Payload for creating a product (POST). Fields map to Production.Product.</summary>
+/// <summary>Flattened product + its related model name (for the N+1 / eager-loading demo).</summary>
+public record ProductWithModelDto(int ProductId, string Name, int? ProductModelId, string? ProductModelName);
+
 public record CreateProductDto(
     string Name,
     string ProductNumber,
@@ -24,7 +22,6 @@ public record CreateProductDto(
     int? ProductModelID,
     DateTime SellStartDate);
 
-/// <summary>Payload for updating a product (PUT).</summary>
 public record UpdateProductDto(
     string Name,
     string ProductNumber,

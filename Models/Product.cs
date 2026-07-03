@@ -3,10 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AdventureWorksCrudApi.Models;
 
-/// <summary>
-/// Maps to the Production.Product table in the full AdventureWorks2022 sample database.
-/// (The lightweight AdventureWorksLT uses SalesLT.Product with slightly different columns.)
-/// </summary>
 [Table("Product", Schema = "Production")]
 public class Product
 {
@@ -46,6 +42,8 @@ public class Product
     public int? ProductSubcategoryID { get; set; }
 
     public int? ProductModelID { get; set; }
+
+    public ProductModel? ProductModel { get; set; }
 
     public DateTime SellStartDate { get; set; }
 

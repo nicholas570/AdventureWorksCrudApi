@@ -38,6 +38,18 @@ public static class ProductEndpoints
             return product is null ? Results.NotFound() : Results.Ok(product);
         });
 
+        group.MapGet("/n-plus-one", async (int? limit, IProductRepository repo, CancellationToken ct) =>
+        {
+            var products = await repo.GetWithModelNaiveAsync(limit ?? 10, ct);
+            return Results.Ok(products.Select(p => new ProductWithModelDto(p.ProductID, p.Name, p.ProductModelID, p.ProductModel?.Name)));
+        });
+
+        group.MapGet("/eager", async (int? limit, IProductRepository repo, CancellationToken ct) =>
+        {
+            var products = await repo.GetWithModelEagerAsync(limit ?? 10, ct);
+            return Results.Ok(products);
+        });
+
         group.MapPost("/", async (CreateProductDto dto, IProductRepository repo, CancellationToken ct) =>
         {
             var product = new Product

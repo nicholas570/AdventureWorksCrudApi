@@ -1,3 +1,4 @@
+using AdventureWorksCrudApi.Dtos;
 using AdventureWorksCrudApi.Models;
 
 namespace AdventureWorksCrudApi.Data;
@@ -13,4 +14,8 @@ public interface IProductRepository
     Task<bool> UpdateAsync(Product product, CancellationToken ct = default);
 
     Task<bool> DeleteAsync(int id, CancellationToken ct = default);
+
+    Task<IReadOnlyList<Product>> GetWithModelNaiveAsync(int limit, CancellationToken ct = default);
+
+    Task<IReadOnlyList<ProductWithModelDto>> GetWithModelEagerAsync(int limit, CancellationToken ct = default);
 }

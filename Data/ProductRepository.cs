@@ -1,3 +1,4 @@
+using AdventureWorksCrudApi.Dtos;
 using AdventureWorksCrudApi.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,5 +49,38 @@ public class ProductRepository(AppDbContext db) : IProductRepository
         db.Products.Remove(existing);
         await db.SaveChangesAsync(ct);
         return true;
+    }
+
+    public async Task<IReadOnlyList<Product>> GetWithModelNaiveAsync(int limit, CancellationToken ct = default)
+    {
+        // N+1 pattern
+        var products = await db.Products
+            .Where(p => p.ProductModelID != null)
+            .OrderBy(p => p.ProductID)
+            .Take(limit)
+            .ToListAsync(ct);
+
+        // One extra round-trip PER product to load its model.
+        // This is the N+1 problem — exactly what lazy loading would do silently.
+        foreach (var p in products)
+        {
+            p.ProductModel = await db.ProductModels
+                .FirstOrDefaultAsync(m => m.ProductModelID == p.ProductModelID, ct);
+        }
+
+        return products;
+    }
+
+
+    public async Task<IReadOnlyList<ProductWithModelDto>> GetWithModelEagerAsync(int limit, CancellationToken ct = default)
+    {
+        // A single query with a LEFT JOIN pulls products + their models.
+        return await db.Products
+            .Where(p => p.ProductModelID != null)
+            .OrderBy(p => p.ProductID)
+            .Include(p => p.ProductModel)   // eager loading
+            .Take(limit)
+            .Select(p => new ProductWithModelDto(p.ProductID, p.Name, p.ProductModelID, p.ProductModel!.Name))
+            .ToListAsync(ct);
     }
 }

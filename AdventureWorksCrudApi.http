@@ -9,6 +9,12 @@ GET {{host}}/api/products?limit=5&cursor=MzIx
 ### Get one product
 GET {{host}}/api/products/680
 
+### Get products - n+1
+GET {{host}}/api/products/n-plus-one?limit=5
+
+### Get products - eager
+GET {{host}}/api/products/eager?limit=5
+
 ### Create a product
 POST {{host}}/api/products
 Content-Type: application/json
