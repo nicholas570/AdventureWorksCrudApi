@@ -2,8 +2,28 @@ namespace AdventureWorksCrudApi.Dtos;
 
 public record PagedResult<T>(IReadOnlyList<T> Items, string? NextCursor);
 
-/// <summary>Flattened product + its related model name (for the N+1 / eager-loading demo).</summary>
 public record ProductWithModelDto(int ProductId, string Name, int? ProductModelId, string? ProductModelName);
+
+public record ProductPhotoDto(
+    int ProductPhotoId,
+    string? ThumbnailPhotoFileName,
+    string? LargePhotoFileName,
+    bool IsPrimary);
+
+public record ProductDetailDto(
+    int ProductId,
+    string Name,
+    string ProductNumber,
+    string? Color,
+    decimal StandardCost,
+    decimal ListPrice,
+    string? Size,
+    decimal? Weight,
+    int? ProductModelId,
+    DateTime SellStartDate,
+    DateTime? SellEndDate,
+    DateTime? DiscontinuedDate,
+    IReadOnlyList<ProductPhotoDto> Photos);
 
 public record CreateProductDto(
     string Name,

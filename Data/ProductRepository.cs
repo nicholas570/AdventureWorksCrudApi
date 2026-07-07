@@ -6,20 +6,63 @@ namespace AdventureWorksCrudApi.Data;
 
 public class ProductRepository(AppDbContext db) : IProductRepository
 {
-    public async Task<IReadOnlyList<Product>> GetPageAsync(int? afterId, int limit, CancellationToken ct = default)
+    public async Task<IReadOnlyList<ProductDetailDto>> GetPageAsync(int? afterId, int limit, CancellationToken ct = default)
     {
-        IQueryable<Product> query = db.Products.AsNoTracking();
+        IQueryable<Product> query = db.Products;
         if (afterId is not null)
             query = query.Where(p => p.ProductID > afterId.Value);
 
-        return await query.OrderBy(p => p.ProductID)
-                          .Take(limit + 1)
-                          .ToListAsync(ct);
+        return await query
+            .OrderBy(p => p.ProductID)
+            .Take(limit + 1)
+            .Select(p => new ProductDetailDto(
+                p.ProductID,
+                p.Name,
+                p.ProductNumber,
+                p.Color,
+                p.StandardCost,
+                p.ListPrice,
+                p.Size,
+                p.Weight,
+                p.ProductModelID,
+                p.SellStartDate,
+                p.SellEndDate,
+                p.DiscontinuedDate,
+                p.ProductProductPhotos
+                    .Select(pp => new ProductPhotoDto(
+                        pp.ProductPhotoID,
+                        pp.ProductPhoto.ThumbnailPhotoFileName,
+                        pp.ProductPhoto.LargePhotoFileName,
+                        pp.IsPrimary))
+                    .ToList()))
+            .ToListAsync(ct);
     }
 
-    public async Task<Product?> GetByIdAsync(int id, CancellationToken ct = default)
+    public async Task<ProductDetailDto?> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        return await db.Products.FindAsync([id], ct).AsTask();
+        return await db.Products
+            .Where(p => p.ProductID == id)
+            .Select(p => new ProductDetailDto(
+                p.ProductID,
+                p.Name,
+                p.ProductNumber,
+                p.Color,
+                p.StandardCost,
+                p.ListPrice,
+                p.Size,
+                p.Weight,
+                p.ProductModelID,
+                p.SellStartDate,
+                p.SellEndDate,
+                p.DiscontinuedDate,
+                p.ProductProductPhotos
+                    .Select(pp => new ProductPhotoDto(
+                        pp.ProductPhotoID,
+                        pp.ProductPhoto.ThumbnailPhotoFileName,
+                        pp.ProductPhoto.LargePhotoFileName,
+                        pp.IsPrimary))
+                    .ToList()))
+            .FirstOrDefaultAsync(ct);
     }
 
     public async Task<Product> AddAsync(Product product, CancellationToken ct = default)
@@ -83,4 +126,5 @@ public class ProductRepository(AppDbContext db) : IProductRepository
             .Select(p => new ProductWithModelDto(p.ProductID, p.Name, p.ProductModelID, p.ProductModel!.Name))
             .ToListAsync(ct);
     }
+
 }

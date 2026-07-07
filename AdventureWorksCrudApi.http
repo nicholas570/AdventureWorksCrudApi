@@ -7,7 +7,7 @@ GET {{host}}/api/products?limit=5
 GET {{host}}/api/products?limit=5&cursor=MzIx
 
 ### Get one product
-GET {{host}}/api/products/680
+GET {{host}}/api/products/771
 
 ### Get products - n+1
 GET {{host}}/api/products/n-plus-one?limit=5

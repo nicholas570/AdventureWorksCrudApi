@@ -54,4 +54,10 @@ public class Product
     public Guid Rowguid { get; set; }
 
     public DateTime ModifiedDate { get; set; }
+
+    // Many-to-many with ProductPhoto via the ProductProductPhoto join table.
+    public List<ProductPhoto> ProductPhotos { get; set; } = [];
+
+    // Join-entity navigation: needed to read the payload columns (IsPrimary, ModifiedDate).
+    public List<ProductProductPhoto> ProductProductPhotos { get; set; } = [];
 }

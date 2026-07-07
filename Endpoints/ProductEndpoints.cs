@@ -27,9 +27,9 @@ public static class ProductEndpoints
             var rows = await repo.GetPageAsync(afterId, take, ct);
             var hasMore = rows.Count > take;
             var items = hasMore ? rows.Take(take).ToList() : rows;
-            var nextCursor = hasMore ? Cursor.Encode(items[^1].ProductID) : null;
+            var nextCursor = hasMore ? Cursor.Encode(items[^1].ProductId) : null;
 
-            return Results.Ok(new PagedResult<Product>(items, nextCursor));
+            return Results.Ok(new PagedResult<ProductDetailDto>(items, nextCursor));
         });
 
         group.MapGet("/{id:int}", async (int id, IProductRepository repo, CancellationToken ct) =>
